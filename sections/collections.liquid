@@ -1,0 +1,62 @@
+{% if request.page_type == 'index' %}
+  {% assign current_collection = collections.all %}
+{% else %}
+  {% assign current_collection = collection %}
+{% endif %}
+
+<h1>{{ current_collection.title }}</h1>
+
+<div class="products-grid">
+
+  {% for product in current_collection.products %}
+
+    <div class="product-card">
+
+      <a href="{{ product.url }}">
+
+        {% if product.featured_image %}
+          <img
+            src="{{ product.featured_image | image_url: width: 400 }}"
+            alt="{{ product.title | escape }}"
+            width="400"
+            height="400"
+          >
+        {% endif %}
+
+        <h3 class="text-product">{{ product.title }}</h3>
+
+        <p class="text-product">{{ product.price | money }}</p>
+
+      </a>
+
+    </div>
+
+  {% endfor %}
+
+</div>
+
+{% stylesheet %}
+.product-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.product-card img {
+  width: 100%;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+}
+
+.text-product {
+  text-decoration: none;
+}
+{% endstylesheet %}

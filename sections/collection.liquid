@@ -1,0 +1,305 @@
+{% if request.page_type == 'index' %}
+  {% assign current_collection = collections.all %}
+{% else %}
+  {% assign current_collection = collection %}
+{% endif %}
+
+<div class="collection-page">
+
+  <div class="collection-header">
+    <p class="collection-eyebrow">SHOP OUR PRODUCTS</p>
+    <h1>{{ current_collection.title }}</h1>
+
+    {% if current_collection.description != blank %}
+      <p class="collection-description">
+        {{ current_collection.description | strip_html }}
+      </p>
+    {% endif %}
+  </div>
+
+
+  <div class="products-grid">
+
+    {% for product in current_collection.products %}
+
+      <div class="product-card">
+
+        <a href="{{ product.url }}" class="product-image-link">
+
+          <div class="product-image-wrapper">
+
+            {% if product.featured_image %}
+
+              <img
+                src="{{ product.featured_image | image_url: width: 600 }}"
+                alt="{{ product.title | escape }}"
+                width="600"
+                height="600"
+                loading="lazy"
+              >
+
+            {% else %}
+
+              <div class="no-image">
+                No image
+              </div>
+
+            {% endif %}
+
+          </div>
+
+        </a>
+
+
+        <div class="product-info">
+
+          <a href="{{ product.url }}" class="product-title">
+            {{ product.title }}
+          </a>
+
+          <p class="product-price">
+            {{ product.price | money }}
+          </p>
+
+
+          {% if product.available %}
+
+            <form method="post" action="/cart/add" class="add-to-cart-form">
+
+              <input
+                type="hidden"
+                name="id"
+                value="{{ product.selected_or_first_available_variant.id }}"
+              >
+
+              <button type="submit" class="add-to-cart-btn">
+                Add to cart
+              </button>
+
+            </form>
+
+          {% else %}
+
+            <button class="add-to-cart-btn sold-out" disabled>
+              Sold out
+            </button>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    {% endfor %}
+
+  </div>
+
+</div>
+
+
+{% stylesheet %}
+
+.collection-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 50px 30px 80px;
+}
+
+
+/* HEADER */
+
+.collection-header {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.collection-eyebrow {
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: #777;
+}
+
+.collection-header h1 {
+  margin: 0;
+  font-size: 42px;
+  font-weight: 700;
+  color: #111;
+}
+
+.collection-description {
+  max-width: 600px;
+  margin: 15px auto 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+
+/* PRODUCT GRID */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+
+/* PRODUCT CARD */
+
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+
+/* IMAGE */
+
+.product-image-link {
+  display: block;
+  text-decoration: none;
+}
+
+.product-image-wrapper {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.product-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-image-wrapper img {
+  transform: scale(1.05);
+}
+
+
+/* NO IMAGE */
+
+.no-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+
+/* PRODUCT INFO */
+
+.product-info {
+  padding: 18px;
+}
+
+.product-title {
+  display: block;
+  text-decoration: none;
+  color: #111;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.product-title:hover {
+  text-decoration: underline;
+}
+
+.product-price {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+}
+
+
+/* ADD TO CART */
+
+.add-to-cart-form {
+  width: 100%;
+}
+
+.add-to-cart-btn {
+  width: 100%;
+  border: none;
+  border-radius: 7px;
+  padding: 12px 15px;
+  background: #111;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+  background: #333;
+  transform: translateY(-1px);
+}
+
+.add-to-cart-btn.sold-out {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+
+/* TABLET */
+
+@media screen and (max-width: 1000px) {
+
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+
+/* MOBILE */
+
+@media screen and (max-width: 700px) {
+
+  .collection-page {
+    padding: 35px 15px 60px;
+  }
+
+  .collection-header h1 {
+    font-size: 32px;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+
+  .product-info {
+    padding: 14px;
+  }
+
+}
+
+
+/* SMALL MOBILE */
+
+@media screen and (max-width: 450px) {
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+{% endstylesheet %}
